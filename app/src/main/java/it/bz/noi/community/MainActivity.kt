@@ -52,13 +52,9 @@ class MainActivity : AppCompatActivity() {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 
-		if (intent.hasExtra("deep_link")) {
-			val deepLink = intent.getStringExtra("deep_link")
-			if (deepLink != null) {
-				val uri = Uri.parse(deepLink)
-				startActivity(Intent(Intent.ACTION_VIEW).apply { data = uri })
-				finish()
-				return
+		if (intent.data == null) {
+			intent.getStringExtra("deep_link")?.let { deepLink ->
+				intent.data = Uri.parse(deepLink)
 			}
 		}
 
@@ -88,11 +84,11 @@ class MainActivity : AppCompatActivity() {
 		// menu should be considered as top level destinations.
 		val appBarConfiguration = AppBarConfiguration(
 			setOf(
-				R.id.navigation_today,
+				R.id.today,
 				R.id.navigation_orientate,
 				R.id.meet,
 				R.id.navigation_eat,
-				R.id.navigation_more,
+				R.id.more,
 				R.id.welcome,
 			)
 		)
@@ -102,13 +98,13 @@ class MainActivity : AppCompatActivity() {
 
 		navController.addOnDestinationChangedListener { _, destination, arguments ->
 			when (destination.id) {
-				R.id.navigation_more -> {
+				R.id.more -> {
 					binding.navView.isVisible = true
 					WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars = true
 					supportActionBar?.hide()
 				}
 				R.id.webViewFragment -> {
-					binding.navView.isVisible = true
+					binding.navView.isVisible = false
 					binding.toolbar.setTitleTextAppearance(binding.toolbar.context, R.style.TextAppearance_NOI_Toolbar_TitleSecondary)
 					arguments?.let {
 						supportActionBar?.title = arguments.getString(WebViewFragment.TITLE_ARG)
